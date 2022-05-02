@@ -5,7 +5,7 @@ import { ContactList } from './ContactList';
 //Contact: name, email, imageURL
 export const App = () => (
   <div>
-    <h1>Meteor Wallet</h1>
+    <h1>Meteor Wallet - Galaxy</h1>
     <ContactForm/>
     <ContactList/>
   </div>
