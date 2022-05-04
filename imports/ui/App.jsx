@@ -3,6 +3,7 @@ import { ContactForm } from './ContactForm';
 import { ContactList } from './ContactList';
 import { Header } from './Header';
 import '../../client/main.css';
+
 //Contact: name, email, imageURL
 export const App = () => (
   <div>

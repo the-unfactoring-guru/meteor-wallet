@@ -1,11 +1,16 @@
 import React from "react";
 import {ContactsCollection} from "../api/ContactsCollection";
 import {useTracker} from 'meteor/react-meteor-data';
-
+import {Meteor} from 'meteor/meteor';
 export const ContactList = () => {
   const contacts = useTracker(() => {
-    return ContactsCollection.find({}, { sort: { createdAt: -1 }}).fetch();
+    return ContactsCollection.find({}, { sort: {createdAt: -1}}).fetch();
   });
+
+  const removeContact = (e, _id) => {
+    e.preventDefault();
+    Meteor.call('contacts.remove', {contactId: _id})
+  }
 
   return (
     <div>
@@ -23,6 +28,15 @@ export const ContactList = () => {
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-medium text-gray-900 truncate">{person.name}</p>
                   <p className="text-sm font-medium text-gray-500 truncate">{person.email}</p>
+                </div>
+                <div>
+                  <a
+                    href="#"
+                    onClick={(e) => removeContact(e, person._id)}
+                    className="inline-flex items-center shadow-sm px-2.5 py-0.5 border border-red-300 text-sm leading-5 font-medium rounded-full text-red-700 bg-white hover:bg-red-50"
+                  >
+                    Delete
+                  </a>
                 </div>
               </div>
             </li>
