@@ -1,26 +1,38 @@
-import React from "react";
+import React, {memo} from "react";
 import {ContactsCollection} from "../api/ContactsCollection";
-import {useTracker} from 'meteor/react-meteor-data';
+import {useSubscribe, useFind} from 'meteor/react-meteor-data';
 import {Meteor} from 'meteor/meteor';
+
 export const ContactList = () => {
-  const contacts = useTracker(() => {
-    return ContactsCollection.find({}, { sort: {createdAt: -1}}).fetch();
+  const isLoading = useSubscribe('allContacts');
+  const contacts = useFind(() => {
+    return ContactsCollection.find({}, { sort: {createdAt: -1}});
   });
+
+  // const contacts = useTracker(() => {
+  //   return ContactsCollection.find({}, { sort: {createdAt: -1}}).fetch();
+  // });
 
   const removeContact = (e, _id) => {
     e.preventDefault();
     Meteor.call('contacts.remove', {contactId: _id})
   }
 
-  return (
-    <div>
-      <div className="mt-10">
-        <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
-          Contact List
-        </h3>
-        <ul role="list" className="mt-4 border-t border-b border-gray-200 divide-y divide-gray-200">
-          {contacts.map((person, personIdx) => (
-            <li key={personIdx} className="py-4 flex items-center justify-between space-x-3">
+  if(isLoading()){
+    return (
+      <div>
+        <div className="mt-10">
+          <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+            Loading...
+          </h3>
+        </div>
+      </div>
+    );
+  }
+
+  const ContactItem = memo(({person}) => {
+    return(
+      <li className="py-4 flex items-center justify-between space-x-3">
               <div className="min-w-0 flex-1 flex items-center space-x-3">
                 <div className="flex-shrink-0">
                   <img className="h-10 w-10 rounded-full" src={person.imageUrl} alt="" />
@@ -40,6 +52,18 @@ export const ContactList = () => {
                 </div>
               </div>
             </li>
+    )
+  });
+
+  return (
+    <div>
+      <div className="mt-10">
+        <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+          Contact List
+        </h3>
+        <ul role="list" className="mt-4 border-t border-b border-gray-200 divide-y divide-gray-200">
+          {contacts.map((person) => (
+            <ContactItem key={person._id} person={person}/> 
           ))}
         </ul>
       </div>
